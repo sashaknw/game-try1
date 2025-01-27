@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dino Run</title>
+    <link rel="stylesheet" href="style.css">
+    
+</head>
+<body>
+    <div id="start-screen" class="screen">
+        <div id="title-container">
+        <p id="title">Dino Run</p>
+        </div>
+        
+        <button id="start-button">Start Game</button>
+    </div>
+    <div id="game-screen" class="screen hidden">
+        <div id="life-bar">Lives: <span id="lives">5</span></div>
+        <div id="level-indicator">Level: <span id="level">1</span></div>
+        <div id="floor"></div>
+        <div id="character"></div>
+        <div id="meteors"></div>
+        <div id="arrow-indicator" class="hidden"></div>
+    </div>
+    <div id="game-over-screen" class="screen hidden">
+        <p>Game Over!</p>
+        <br><br>
+        <button id="restart-button">Start Again</button>
+    </div>
+    <script src="js/Element.js"></script>
+    <script src="js/Player.js"></script>
+    <script src="js/Meteor.js"></script>
+    <script src="js/script.js"></script>
+</body>
+</html>
