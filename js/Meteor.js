@@ -12,7 +12,7 @@ class Meteor extends Element {
 
     // Initialize position & size
     super(
-      meteor.offsetLeft,
+      meteor.offsetLeft ,
       meteor.offsetTop,
       meteor.clientWidth,
       meteor.clientHeight
@@ -21,22 +21,33 @@ class Meteor extends Element {
   }
 
   fall(speed, onImpact) {
+   
     const fallInterval = setInterval(() => {
-      this.y += speed;
+
+      this.y += speed ;
       this.element.style.top = `${this.y}px`;
+       this.element.style.left = `${this.x}px`;
+      
 
       if (this.y > window.innerHeight - 150) {
         explodeMeteor(this);
         clearInterval(fallInterval);
-      } else if (onImpact(this)) {
-        clearInterval(fallInterval);
+
+      // } else if (this.x < 100) {
+      //   this.remove();
+      //  clearInterval(fallInterval);
+       
       }
+      else if (onImpact(this)) {
+        clearInterval(fallInterval);
+      } 
     }, 50);
       }
       remove() {
         if (this.element && this.element.parentNode) {
           this.element.parentNode.removeChild(this.element);
         }
+        
       }
   }
 

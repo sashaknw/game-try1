@@ -7,10 +7,11 @@ class Element {
   }
 
   getRect() {
+    const padding = 7;
     return {
       left: this.x,
       right: this.x + this.width,
-      top: this.y,
+      top: this.y + padding,
       bottom: this.y + this.height,
     };
   }

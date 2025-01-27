@@ -8,6 +8,8 @@ const livesText = document.getElementById("lives");
 const levelText = document.getElementById("level");
 const arrowIndicator = document.getElementById("arrow-indicator");
 
+const keyState = {};
+
 let player;
 let lives = 5;
 let currentLevel = 1;
@@ -19,6 +21,7 @@ let levelPassed = false;
 startButton.addEventListener("click", startGame);
 restartButton.addEventListener("click", restartGame);
 document.addEventListener("keydown", (e) => movePlayer(e));
+document.addEventListener("keyup", (e) => delete keyState[e.code]);
 
 function updateLevelIndicator() {
   levelText.textContent = currentLevel;
@@ -26,20 +29,22 @@ function updateLevelIndicator() {
 
 function startGame() {
   switchScreens(startScreen, gameScreen);
-  player = new Player("character");
+  player = new Player("character", 45, 50, 24);
+  //player.setPosition(100,600);
   lives = 5;
   currentLevel = 1;
   meteorsAvoided = 0;
   levelPassed = false;
   updateLevelIndicator();
   livesText.textContent = lives;
+  updateHearts();
   startLevel();
 }
 
 function restartGame() {
   switchScreens(gameOverScreen, gameScreen);
   player = new Player("character");
-  
+
 
   lives = 5;
   currentLevel = 1;
@@ -47,6 +52,7 @@ function restartGame() {
   levelPassed = false;
   updateLevelIndicator();
   livesText.textContent = lives;
+  updateHearts();
   startLevel();
 
 }
@@ -89,7 +95,10 @@ function movePlayer(e) {
     player.move(-stepSize);
   } else if (e.key === "ArrowRight") {
     player.move(stepSize);
+  } else if (e.key === "ArrowUp") {
+    player.jump();
   }
+  
   checkPlayerPosition();
 }
 
@@ -108,7 +117,7 @@ function advanceToNextLevel() {
 
   
   player.setPosition(0, player.y);
-  setTimeout(() => startLevel(), 500);
+  setTimeout(() => startLevel(), 100);
 }
 
 function showNextLevelIndicator() {
@@ -117,10 +126,14 @@ function showNextLevelIndicator() {
 
 function checkCollision(meteor, player) {
   player.updatePosition();
+
   if (player.checkCollision(meteor)) {
+    explodeMeteor(meteor);
+    player.explode();
     handleCollision();
     return true;
-  } else if (meteor.y + meteor.height >= window.innerHeight) {
+  }
+   if (meteor.y + meteor.height >= window.innerHeight) {
     explodeMeteor(meteor);
     return true;
   }
@@ -148,9 +161,37 @@ function explodeMeteor(meteor) {
 function handleCollision() {
   lives--;
   livesText.textContent = lives;
+  
+  player.explode();
+
+  // let blinkCount = 0;
+  // const blinkInterval = setInterval(() => {
+  //   player.element.style.visibility =
+  //     player.element.style.visibility === "hidden" ? "visible" : "hidden";
+  //   blinkCount++;
+  //   if (blinkCount >= 6) {
+  //     clearInterval(blinkInterval);
+  //     player.element.style.visibility = "visible"; 
+  //   }
+  // }, 100);
+
+updateHearts();
+
   if (lives <= 0) {
     endGame();
   }
+}
+
+function updateHearts() {
+  console.log("Updating hearts, lives left:", lives);
+  const hearts = document.querySelectorAll('.heart');
+  hearts.forEach((heart, index) => {
+    if (index >= lives) {
+      heart.classList.add('hidden');
+    } else {
+      heart.classList.remove('hidden');
+    }
+  });
 }
 
 function endGame() {
