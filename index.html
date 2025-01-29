@@ -3,38 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <title>Dino Run</title>
+    <link rel="icon" type="image/png" href="assets/dino-RUN-logo.png">
     <link rel="stylesheet" href="style.css">
-    
+    <audio id="background-music" autoplay loop>
+        <source src="assets/sounds/bouncy-house-organ-synthbass.wav" type="audio/mpeg">
+    </audio>
 </head>
 <body>
-    <div id="start-screen" class="screen">
-        <div id="title-container">
-        <p id="title">Dino Run</p>
+   
+        <div id="start-screen" class="screen">
+            <div id="title-container">
+                <img id="dino-img" src="assets/dino-RUN-logo.png" alt="Dino">
+            </div>
+            <button id="start-button">Start Game</button>
+            <div id="dino-figure"></div>
         </div>
-        
-        <button id="start-button">Start Game</button>
-    </div>
-    <div id="game-screen" class="screen hidden">
-       
-       <div id="lives">
-  <div class="heart" ></div>
-  <div class="heart" ></div>
-  <div class="heart" ></div>
-  <div class="heart" ></div>
-  <div class="heart" ></div>
-</div>
 
-        <div id="level-indicator">Level: <span id="level">1</span></div>
-        <div id="floor"></div>
-        <div id="character"></div>
-        <div id="meteors"></div>
-        <div id="arrow-indicator" class="hidden"></div>
-    </div>
-    <div id="game-over-screen" class="screen hidden">
-        <p>Game Over!</p>
-        <br><br>
-        <button id="restart-button">Start Again</button>
-    </div>
+        <div id="game-screen" class="screen hidden" >
+            <div id="lives"></div>
+            <div id="level-indicator">Level: <span id="level">1</span></div>
+            <div id="floor" style="width: 100%; height: 50px; position: absolute; bottom: 0;"></div>
+            <div id="character" style="position: absolute; bottom: 50px;"></div>
+            <div id="meteors"></div>
+            <audio id="explosion-sound">
+                <source src="assets/sounds/distorted-abyss-explosion.wav" type="audio/mpeg">
+            </audio>
+            <div id="arrow-indicator" class="hidden"></div>
+        </div>
+
+        <div id="game-over-screen" class="screen hidden">
+            <div id="game-over-message-container">
+                <img id="game-over-message" src="assets/game-over-transp.png" alt="Game Over">
+            </div>
+            <button id="restart-button">Start Again</button>
+            <input type="text" id="player-name" placeholder="Enter your name">
+            <button id="submit-score">Submit Score</button>
+
+            <div id="top-and-reset-div">
+                <h2>Top Scores</h2>
+                <button id="reset-scores">Reset</button>
+            </div>
+
+            <div id="score-table-container">
+                <table id="score-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Name</th>
+                            <th>Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Top scores will be added here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+   
+
     <script src="js/Element.js"></script>
     <script src="js/Player.js"></script>
     <script src="js/Meteor.js"></script>
