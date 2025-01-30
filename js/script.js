@@ -1,3 +1,4 @@
+import { Meteor } from "./Meteor.js";
 document.addEventListener("DOMContentLoaded", function () {
   console.log("DOM fully loaded");
 
@@ -18,7 +19,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const scoreTable = document
     .getElementById("score-table")
     .getElementsByTagName("tbody")[0];
-  let player; 
+  const resetButton = document.getElementById("reset-scores");
+  
+
+
+  let player;
+  let keyState = {};
   let lives = 5;
   let currentLevel = 1;
   let activeMeteors = [];
@@ -31,8 +37,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Event Listeners
   startButton.addEventListener("click", startGame);
+  restartButton.addEventListener("click", restartGame);
   document.addEventListener("click", function () {
-    alert("Start button clicked!");
+    console.log("Start button clicked!");
     if (backgroundMusic.paused) {
       backgroundMusic.volume = 0;
       backgroundMusic.play();
@@ -55,17 +62,25 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Event listener for key events
-  document.addEventListener("keydown", (e) => movePlayer(e));
-  document.addEventListener("keyup", (e) => {
-    delete keyState[e.code];
+  document.addEventListener("keydown", (e) => {
+    keyState[e.code] = true;
+    movePlayer(e);
   });
+
+  document.addEventListener("keyup", (e) => {
+    keyState[e.code] = false;
+  });
+
+   resetButton.addEventListener("click", resetScoreTable);
 
   // Function to start the game
   function startGame() {
     console.log("starting game...");
+  
+
     switchScreens(startScreen, gameScreen);
 
-    player = new Player("character", 45, 50, 24, gameScreen); // Create the player after screen switch
+    player = new Player("character", 45, 50, 24);
 
     lives = 5;
     currentLevel = 1;
@@ -84,7 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Restart the game
   function restartGame() {
     switchScreens(gameOverScreen, gameScreen);
-    player = new Player("character", 45, 50, 24, gameScreen); // Reinitialize the player
+    player = new Player("character", 45, 50, 24); 
 
     lives = 5;
     currentLevel = 1;
@@ -94,7 +109,7 @@ document.addEventListener("DOMContentLoaded", function () {
     livesText.textContent = lives;
     updateLivesWithHearts(lives);
 
-    startLevel(); // Restart level
+    startLevel();
   }
 
   // Function to update the level indicator
@@ -142,28 +157,38 @@ document.addEventListener("DOMContentLoaded", function () {
     );
   }
 
-  // Function to move the player based on key events
+
   function movePlayer(e) {
+    if (!player) return;
+
     const stepSize = 30;
-    if (e.key === "ArrowLeft") {
-      player.move(-stepSize);
-    } else if (e.key === "ArrowRight") {
-      player.move(stepSize);
-    } else if (e.key === "ArrowUp") {
-      player.jump();
+
+    switch (e.code) {
+      case "ArrowLeft":
+      case "KeyA":
+        player.move(-stepSize);
+        break;
+      case "ArrowRight":
+      case "KeyD":
+        player.move(stepSize);
+        break;
+      case "ArrowUp":
+      case "Space":
+      case "KeyW":
+        player.jump();
+        break;
     }
 
     checkPlayerPosition();
   }
 
-  // Function to check player's position and advance level if necessary
   function checkPlayerPosition() {
     if (player.x + player.width >= gameScreen.clientWidth && levelPassed) {
       advanceToNextLevel();
     }
   }
 
-  // Advance to the next level
+
   function advanceToNextLevel() {
     if (!levelPassed) return;
     currentLevel++;
@@ -175,12 +200,11 @@ document.addEventListener("DOMContentLoaded", function () {
     setTimeout(() => startLevel(), 100);
   }
 
-  // Function to show the next level indicator
+ 
   function showNextLevelIndicator() {
     arrowIndicator.style.display = "block";
   }
 
-  // Check for collisions
   function checkCollision(meteor, player) {
     player.updatePosition();
 
@@ -189,47 +213,47 @@ document.addEventListener("DOMContentLoaded", function () {
       impactSound.volume = 0.5;
       impactSound.play();
 
-      explodeMeteor(meteor, true);
+      meteor.explodeMeteor(true);
       player.explode();
       handleCollision();
       return true;
     }
     if (meteor.y + meteor.height >= window.innerHeight) {
-      explodeMeteor(meteor, false);
+      meteor.explodeMeteor(false);
       return true;
     }
     return false;
   }
 
   // Explode meteor and play sound
-  function explodeMeteor(meteor, hitByPlayer = false) {
-    meteor.element.classList.add("explode");
-    const numFrames = 6;
-    let currentFrame = 1;
-    const explosionSoundInstance = new Audio(
-      "assets/sounds/distorted-abyss-explosion.wav"
-    );
-    explosionSoundInstance.currentTime = 0;
-    explosionSoundInstance.play();
+  // function explodeMeteor(meteor, hitByPlayer = false) {
+  //   meteor.element.classList.add("explode");
+  //   const numFrames = 6;
+  //   let currentFrame = 1;
+  //   const explosionSoundInstance = new Audio(
+  //     "assets/sounds/distorted-abyss-explosion.wav"
+  //   );
+  //   explosionSoundInstance.currentTime = 0;
+  //   explosionSoundInstance.play();
 
-    activeExplosionSounds.push(explosionSoundInstance);
+  //   activeExplosionSounds.push(explosionSoundInstance);
 
-    const explosionInterval = setInterval(() => {
-      if (currentFrame > numFrames) {
-        clearInterval(explosionInterval);
-        if (hitByPlayer) {
-          meteor.remove();
-        } else {
-          setTimeout(() => meteor.remove(), 200);
-        }
-      } else {
-        meteor.element.style.backgroundImage = `url('./assets/explosion/PNG/Smoke/Smoke${currentFrame}.png')`;
-        currentFrame++;
-      }
-    }, 45);
+  //   const explosionInterval = setInterval(() => {
+  //     if (currentFrame > numFrames) {
+  //       clearInterval(explosionInterval);
+  //       if (hitByPlayer) {
+  //         meteor.remove();
+  //       } else {
+  //         setTimeout(() => meteor.remove(), 200);
+  //       }
+  //     } else {
+  //       meteor.element.style.backgroundImage = `url('./assets/explosion/PNG/Smoke/Smoke${currentFrame}.png')`;
+  //       currentFrame++;
+  //     }
+  //   }, 45);
 
-    activeExplosionIntervals.push(explosionInterval);
-  }
+  //   activeExplosionIntervals.push(explosionInterval);
+  // }
 
   // Update lives with heart images
   function updateLivesWithHearts(numOfLives, hit) {
@@ -297,7 +321,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Switch between screens
   function switchScreens(hideScreen, showScreen) {
-     console.log("Switching screens:", hideScreen, showScreen);
+    console.log("Switching screens:", hideScreen, showScreen);
     hideScreen.classList.add("hidden");
     showScreen.classList.remove("hidden");
   }
@@ -350,12 +374,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Reset the scores table
-  function resetScoreTable() {
-    localStorage.removeItem("topScores");
-    scoreTable.innerHTML = "";
-    console.log("Score table reset");
-  }
+ 
+
+
+ function resetScoreTable() {
+   console.log("Reset button clicked");
+   localStorage.removeItem("topScores");
+   console.log("Local storage cleared:", localStorage.getItem("topScores")); // Should be null
+   scoreTable.innerHTML = "";
+   displayTopScores();
+   console.log("Score table reset and updated");
+ }
 
   // Show game over screen
   function showGameOverScreen() {
@@ -363,6 +392,5 @@ document.addEventListener("DOMContentLoaded", function () {
     displayTopScores();
   }
 
-  
   // resetScoreTable();
 });

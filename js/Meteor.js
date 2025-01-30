@@ -1,4 +1,6 @@
-class Meteor extends Element {
+
+
+export class Meteor extends Element {
   constructor(container, imageSrc) {
     const meteor = document.createElement("div");
     meteor.style.width = "60px";
@@ -18,6 +20,10 @@ class Meteor extends Element {
     );
     this.element = meteor;
     this.fallInterval = null;
+
+    // Initialize explosion sound and interval arrays as instance variables
+    this.activeExplosionSounds = [];
+    this.activeExplosionIntervals = [];
   }
 
   fall(speed, onImpact) {
@@ -27,12 +33,44 @@ class Meteor extends Element {
       this.element.style.left = `${this.x}px`;
 
       if (this.y > window.innerHeight - 150) {
-        explodeMeteor(this);
-        clearInterval(this.fallInterval); // Stop falling once explosion happens
+        this.explodeMeteor();
+        clearInterval(this.fallInterval);
       } else if (onImpact(this)) {
         clearInterval(this.fallInterval);
       }
     }, 50);
+  }
+
+  // Explosion logic moved inside the class
+  explodeMeteor(hitByPlayer = false) {
+    this.element.classList.add("explode");
+    const numFrames = 6;
+    let currentFrame = 1;
+    const explosionSoundInstance = new Audio(
+      "assets/sounds/distorted-abyss-explosion.wav"
+    );
+    explosionSoundInstance.currentTime = 0;
+    explosionSoundInstance.play();
+
+    // Add sound to the instance's active explosion sounds
+    this.activeExplosionSounds.push(explosionSoundInstance);
+
+    const explosionInterval = setInterval(() => {
+      if (currentFrame > numFrames) {
+        clearInterval(explosionInterval);
+        if (hitByPlayer) {
+          this.remove();
+        } else {
+          setTimeout(() => this.remove(), 200);
+        }
+      } else {
+        this.element.style.backgroundImage = `url('./assets/explosion/PNG/Smoke/Smoke${currentFrame}.png')`;
+        currentFrame++;
+      }
+    }, 45);
+
+    // Add interval to the instance's active explosion intervals
+    this.activeExplosionIntervals.push(explosionInterval);
   }
 
   remove() {
@@ -40,5 +78,11 @@ class Meteor extends Element {
     if (this.element && this.element.parentNode) {
       this.element.parentNode.removeChild(this.element); // Remove meteor from DOM
     }
+
+    // Clean up any active explosion sounds and intervals
+    this.activeExplosionSounds.forEach((sound) => sound.pause());
+    this.activeExplosionIntervals.forEach((interval) =>
+      clearInterval(interval)
+    );
   }
 }

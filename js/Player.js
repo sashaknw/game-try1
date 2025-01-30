@@ -7,7 +7,7 @@ class Player extends Element {
       element.clientWidth,
       element.clientHeight
     );
-    this.gameScreen = gameScreen;
+    this.gameScreen = document.getElementById("game-screen") || gameScreen ;
     this.element = element;
     this.isWalking = false;
     this.frameWidth = frameWidth;
@@ -15,6 +15,7 @@ class Player extends Element {
     this.totalFrames = totalFrames;
     this.currentFrame = 0;
     this.animationInterval = null;
+    this.walkTimeout = null;
     
 
     this.isJumping = false;
@@ -55,9 +56,10 @@ class Player extends Element {
   move(deltaX) {
 
      if (!this.gameScreen) return;
+
     this.x = Math.max(
       0,
-      Math.min(this.x + deltaX, gameScreen.clientWidth - this.width)
+      Math.min(this.x + deltaX, this.gameScreen.clientWidth - this.width)
     );
     this.setPosition(this.x, this.y);
     

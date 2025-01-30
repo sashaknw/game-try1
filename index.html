@@ -11,7 +11,7 @@
 </head>
 <body>
    
-        <div id="start-screen" class="screen">
+        <div id="start-screen" class="screen" class="hidden">
             <div id="title-container">
                 <img id="dino-img" src="assets/dino-RUN-logo.png" alt="Dino">
             </div>
@@ -19,7 +19,7 @@
             <div id="dino-figure"></div>
         </div>
 
-        <div id="game-screen" class="screen hidden" >
+        <div id="game-screen" class="hidden" >
             <div id="lives"></div>
             <div id="level-indicator">Level: <span id="level">1</span></div>
             <div id="floor" style="width: 100%; height: 50px; position: absolute; bottom: 0;"></div>
@@ -31,7 +31,7 @@
             <div id="arrow-indicator" class="hidden"></div>
         </div>
 
-        <div id="game-over-screen" class="screen hidden">
+        <div id="game-over-screen" class="hidden">
             <div id="game-over-message-container">
                 <img id="game-over-message" src="assets/game-over-transp.png" alt="Game Over">
             </div>
@@ -63,7 +63,7 @@
 
     <script src="js/Element.js"></script>
     <script src="js/Player.js"></script>
-    <script src="js/Meteor.js"></script>
-    <script src="js/script.js"></script>
+    <script type="module" src="js/Meteor.js"></script>
+    <script type="module" src="js/script.js"></script>
 </body>
 </html>
