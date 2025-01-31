@@ -177,9 +177,9 @@ document.addEventListener("DOMContentLoaded", function () {
     gameScreen.style.backgroundImage = `url('./assets/background${backgroundNumber}.png')`;
     gameScreen.style.backgroundSize = "cover";
 
-    // Increase initial meteor count by 10%
-    const totalMeteors = Math.ceil(5.5 * currentLevel); // 5.5 instead of 5 for 10% increase
-    const speed = 5 + currentLevel;
+    
+    const totalMeteors = Math.ceil(5.5 * currentLevel); 
+    const speed = 6 + currentLevel;
     meteorsAvoided = 0;
     levelPassed = false;
     arrowIndicator.style.display = "none";
