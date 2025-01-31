@@ -4,14 +4,13 @@
     <meta charset="UTF-8">
     <title>Dino Run</title>
     <link rel="icon" type="image/png" href="assets/dino-RUN-logo.png">
-    
     <link rel="stylesheet" href="style.css">
     <audio id="background-music" loop>
         <source src="assets/sounds/bouncy-house-organ-synthbass.wav" type="audio/mpeg">
     </audio>
 </head>
 <body>
-    <div id="start-screen" class="screen" class="hidden">
+    <div id="start-screen" class="screen">
         <div id="title-container">
             <img id="dino-img" src="assets/dino-RUN-logo.png" alt="Dino">
         </div>
@@ -22,7 +21,7 @@
     <div id="game-screen" class="hidden">
         <div id="lives"></div>
         <div id="level-indicator">Level: <span id="level">1</span></div>
-        <div id="floor" style="width: 100%; height: 70px; position: absolute; bottom: 0;"></div>
+        <div id="floor"></div>
         <div id="character"></div>
         <div id="meteors"></div>
         <audio id="explosion-sound">
@@ -52,31 +51,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Top scores will be added here -->
                 </tbody>
             </table>
         </div>
         <input type="text" id="player-name" placeholder="Enter your name">
         <button id="submit-score" class="retro-button retro-button--secondary retro-button--medium">Submit Score</button>
-    </div>
-
-    <!-- Persistent score container -->
-    <div id="persistent-score-container" class="persistent-score-container">
-        <h2 class="top-scores">Top Scores</h2>
-        <div class="score-table-wrapper">
-            <table id="persistent-score-table">
-                <thead>
-                    <tr>
-                        <th>Rank</th>
-                        <th>Name</th>
-                        <th>Level</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Scores will be inserted here -->
-                </tbody>
-            </table>
-        </div>
     </div>
 
     <script src="js/Element.js"></script>

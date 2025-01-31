@@ -12,7 +12,7 @@ body {
 
 @font-face {
     font-family: 'Monogram';
-    src: url('./assets/font/monogram/ttf/monogram.ttf') format('truetype');
+    src: url('assets/font/monogram/ttf/monogram.ttf') format('truetype');
 }
 
 /* Screen Layout */
@@ -50,19 +50,17 @@ body {
     padding-top: 20px;
     position: relative;
     max-width: 1000px;
-        max-height: 850px;
-        
+    max-height: 850px;
 }
+
 #game-over-screen {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     max-width: 1000px;
-        max-height: 850px;
-
+    max-height: 850px;
 }
-
 
 .hidden {
     display: none !important;
@@ -133,9 +131,8 @@ body {
     left: 50%;
     width: calc(46px * 1.2);
     height: calc(50px * 1.2);
-    background: url('./assets/dinoCharactersVersion1.1/sheets/DinoSprites - vita.png') no-repeat;
+    background: url('assets/dinoCharactersVersion1.1/sheets/DinoSprites - vita.png') no-repeat;
     background-size: auto calc(50px * 1.2);
-
     transform: translateX(-50%);
     transition: left 0.15s ease-out, transform 0.15s ease-out;
     z-index: 10;
@@ -145,9 +142,10 @@ body {
 #floor {
     position: absolute;
     right: 0;
+    bottom: 0;
     width: 100%;
-    height: 95px;
-    background: url('./assets/floor.png') repeat-x;
+    height: 70px;
+    background: url('assets/floor.png') repeat-x;
     background-size: 140px 65px;
     z-index: 1;
 }
@@ -170,7 +168,7 @@ body {
     width: 40px;
     height: 40px;
     position: absolute;
-    background: url('./assets/meteors/flaming_meteor.png') no-repeat center center / cover;
+    background: url('assets/meteors/flaming_meteor.png') no-repeat center center / cover;
 }
 
 .explode {
@@ -195,29 +193,7 @@ body {
     animation: float 3s ease-in-out infinite;
 }
 
-/* Buttons & Input Styles */
-/* .game-button {
-    font-family: 'Monogram', sans-serif;
-    padding: 15px 30px;
-    background-color: rgba(0, 0, 0, 0.7);
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-} */
-
-
-
-/* .game-button:hover {
-    background-color: rgba(0, 0, 0, 0.9);
-}
-
-
-#submit-score:hover {
-    background-color: #45a049;
-} */
-
+/* Score Table Styles */
 #player-name {
     font-family: 'monogram', sans-serif;
     font-size: 28px;
@@ -228,8 +204,6 @@ body {
     width: 200px;
     text-align: center;
 }
-
-
 
 #score-table {
     font-family: 'monogram', sans-serif;
@@ -265,7 +239,6 @@ body {
     background-color: #d6e7d6;
 }
 
-/* Replace your current #top-and-reset-div styles with these */
 #top-and-reset-div {
     width: 60%;
     max-width: 600px;
@@ -279,9 +252,9 @@ body {
     top: 24px;
     opacity: 0.01;
 }
+
 #restart-button {
     margin-bottom: 30px;
-    /* Space between restart button and score section */
 }
 
 .top-scores {
@@ -303,6 +276,116 @@ body {
     justify-content: center;
     margin-top: 10px;
 }
+
+/* Button Styles */
+.retro-button {
+    font-family: 'monogram', sans-serif;
+    border: 3px dashed #000;
+    text-transform: uppercase;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.1s ease-in-out;
+    margin: 10px;
+    outline: none;
+    border-radius: 50px;
+}
+
+.retro-button:before,
+.retro-button:after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: -4px;
+    left: -4px;
+    z-index: -1;
+}
+
+.retro-button:after {
+    top: 4px;
+    left: 4px;
+}
+
+.retro-button:hover,
+.retro-button:focus {
+    top: 2px;
+}
+
+.retro-button:active {
+    top: 4px;
+}
+
+.retro-button--medium {
+    font-size: 26px;
+    padding: 10px 20px;
+}
+
+.retro-button--large {
+    font-size: 28px;
+    padding: 15px 30px;
+}
+
+.retro-button--primary {
+    background-color: #ffcc00;
+    color: #000;
+    box-shadow: 0 4px #cc9900;
+}
+
+.retro-button--primary:before {
+    background: #ff9900;
+}
+
+.retro-button--primary:after {
+    background: #ffcc33;
+}
+
+.retro-button--primary:hover,
+.retro-button--primary:focus {
+    background-color: #ffd700;
+}
+
+.retro-button--secondary {
+    background-color: #0099cc;
+    color: #fff;
+    box-shadow: 0 4px #006699;
+}
+
+.retro-button--secondary:before {
+    background: #006699;
+}
+
+.retro-button--secondary:after {
+    background: #33ccff;
+}
+
+.retro-button--secondary:hover,
+.retro-button--secondary:focus {
+    background-color: #00bfff;
+}
+
+.retro-button--link {
+    font-family: 'Monogram', sans-serif;
+    background-color: transparent;
+    text-decoration: underline;
+    border: none;
+    box-shadow: none;
+}
+
+.retro-button--link:before,
+.retro-button--link:after {
+    display: none;
+}
+
+.retro-button--link:hover,
+.retro-button--link:focus {
+    color: #00f;
+    top: 0;
+}
+
+.retro-button--link:active {
+    top: 4px;
+}
+
 /* Animations */
 @keyframes float {
 
@@ -344,185 +427,4 @@ body {
 
 .blink-heart {
     animation: blink 0.5s linear;
-}
-
-.retro-button {
-    font-family: 'monogram', sans-serif;
-    border: 3px dashed #000;
-    text-transform: uppercase;
-    cursor: pointer;
-    position: relative;
-    transition: all 0.1s ease-in-out;
-    margin: 10px;
-    outline: none;
-    border-radius: 50px;
-}
-
-.retro-button:before,
-.retro-button:after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: -4px;
-    left: -4px;
-    z-index: -1;
-}
-
-.retro-button:after {
-    top: 4px;
-    left: 4px;
-}
-
-.retro-button:hover,
-.retro-button:focus {
-    top: 2px;
-}
-
-.retro-button:active {
-    top: 4px;
-}
-.retro-button--medium {
-    font-size: 26px;
-    padding: 10px 20px;
-}
-.retro-button--large {
-    font-size: 28px;
-    padding: 15px 30px;
-}
-
-/* Primary Button */
-.retro-button--primary {
-    background-color: #ffcc00;
-    color: #000;
-    box-shadow: 0 4px #cc9900;
-}
-
-.retro-button--primary:before {
-    background: #ff9900;
-}
-
-.retro-button--primary:after {
-    background: #ffcc33;
-}
-
-.retro-button--primary:hover,
-.retro-button--primary:focus {
-    background-color: #ffd700;
-}
-.retro-button--secondary {
-    background-color: #0099cc;
-    color: #fff;
-    box-shadow: 0 4px #006699;
-}
-
-.retro-button--secondary:before {
-    background: #006699;
-}
-
-.retro-button--secondary:after {
-    background: #33ccff;
-}
-
-.retro-button--secondary:hover,
-.retro-button--secondary:focus {
-    background-color: #00bfff;
-}
-
-.retro-button--link, .top-scores {
-    font-family: 'Monogram', sans-serif;
-    background-color: transparent;
-    text-decoration: underline;
-    border: none;
-    box-shadow: none;
-}
-
-.retro-button--link:before,
-.retro-button--link:after {
-    display: none;
-}
-
-.retro-button--link:hover,
-.retro-button--link:focus {
-    color: #00f;
-    top: 0;
-}
-
-.retro-button--link:active {
-    top: 4px;
-}
-
-/* Persistent Score Table Styles */
-.persistent-score-container {
-    position: fixed;
-    right: 20px;
-    top: 20px;
-    background: rgba(0, 0, 0, 0.7);
-    padding: 15px;
-    border-radius: 10px;
-    z-index: 1000;
-    max-width: 300px;
-    display: none;
-    /* Will be shown via JS when scores exist */
-}
-
-.persistent-score-container .top-scores {
-    color: white;
-    font-size: 24px;
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-.score-table-wrapper {
-    max-height: 200px;
-    overflow-y: auto;
-}
-
-#persistent-score-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: 'monogram', sans-serif;
-    color: white;
-}
-
-#persistent-score-table th,
-#persistent-score-table td {
-    padding: 5px;
-    text-align: center;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-#persistent-score-table th {
-    background: rgba(76, 175, 80, 0.7);
-    color: white;
-    font-size: 18px;
-    position: sticky;
-    top: 0;
-}
-
-#persistent-score-table td {
-    background: rgba(255, 255, 255, 0.1);
-    font-size: 16px;
-}
-
-/* Media Queries for Responsive Design */
-@media (max-width: 768px) {
-    .persistent-score-container {
-        max-width: 200px;
-        right: 10px;
-        top: 10px;
-        padding: 10px;
-    }
-
-    .persistent-score-container .top-scores {
-        font-size: 20px;
-    }
-
-    #persistent-score-table th {
-        font-size: 16px;
-    }
-
-    #persistent-score-table td {
-        font-size: 14px;
-    }
 }
