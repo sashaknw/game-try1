@@ -1,8 +1,5 @@
 import { Meteor } from "./Meteor.js";
 document.addEventListener("DOMContentLoaded", function () {
-  console.log("DOM fully loaded");
-
-  // Declare all constants first, to ensure they're ready to be used
   const startButton = document.getElementById("start-button");
   const restartButton = document.getElementById("restart-button");
   const startScreen = document.getElementById("start-screen");
@@ -20,8 +17,6 @@ document.addEventListener("DOMContentLoaded", function () {
     .getElementById("score-table")
     .getElementsByTagName("tbody")[0];
   const resetButton = document.getElementById("reset-scores");
-  
-
 
   let player;
   let keyState = {};
@@ -33,33 +28,60 @@ document.addEventListener("DOMContentLoaded", function () {
   let levelPassed = false;
   let activeExplosionSounds = [];
   let activeExplosionIntervals = [];
-  console.log("hiiii");
+  let isGameOver = false;
 
   // Event Listeners
   startButton.addEventListener("click", startGame);
   restartButton.addEventListener("click", restartGame);
-  document.addEventListener("click", function () {
-    console.log("Start button clicked!");
-    if (backgroundMusic.paused) {
-      backgroundMusic.volume = 0;
-      backgroundMusic.play();
+  //  document.addEventListener("click", function () {
+  //    if (!isGameOver && backgroundMusic.paused) {
+  //      backgroundMusic.volume = 0;
+  //      backgroundMusic.play();
 
-      let fadeDuration = 3000;
-      let fadeStep = 0.05; // increment for volume change
-      let currentVolume = 0;
+  //      let fadeDuration = 3000;
+  //      let fadeStep = 0.05;
+  //      let currentVolume = 0;
+  //      const maxBackgroundVolume = 0.4;
 
-      let fadeInterval = setInterval(function () {
-        currentVolume += fadeStep;
+  //      let fadeInterval = setInterval(function () {
+  //        if (isGameOver) {
+  //          clearInterval(fadeInterval);
+  //          backgroundMusic.pause();
+  //          backgroundMusic.currentTime = 0;
+  //          return;
+  //        }
 
-        if (currentVolume >= 1) {
-          currentVolume = 1;
-          clearInterval(fadeInterval);
-        }
+  //        currentVolume += fadeStep;
+  //        if (currentVolume >= maxBackgroundVolume) {
+  //          currentVolume = maxBackgroundVolume;
+  //          clearInterval(fadeInterval);
+  //        }
+  //        backgroundMusic.volume = currentVolume;
+  //      }, fadeDuration / (1 / fadeStep));
+  //    }
+  //  });
 
-        backgroundMusic.volume = currentVolume;
-      }, fadeDuration / (1 / fadeStep));
-    }
-  });
+  // document.addEventListener("click", function () {
+  //   if (backgroundMusic.paused) {
+  //     backgroundMusic.volume = 0;
+  //     backgroundMusic.play();
+
+  //     let fadeDuration = 3000;
+  //     let fadeStep = 0.05; // increment for volume change
+  //     let currentVolume = 0;
+
+  //     let fadeInterval = setInterval(function () {
+  //       currentVolume += fadeStep;
+
+  //       if (currentVolume >= 1) {
+  //         currentVolume = 1;
+  //         clearInterval(fadeInterval);
+  //       }
+
+  //       backgroundMusic.volume = currentVolume;
+  //     }, fadeDuration / (1 / fadeStep));
+  //   }
+  // });
 
   // Event listener for key events
   document.addEventListener("keydown", (e) => {
@@ -71,16 +93,20 @@ document.addEventListener("DOMContentLoaded", function () {
     keyState[e.code] = false;
   });
 
-   resetButton.addEventListener("click", resetScoreTable);
+  resetButton.addEventListener("click", resetScoreTable);
 
-  // Function to start the game
   function startGame() {
     console.log("starting game...");
-  
+    isGameOver = false;
+    if (backgroundMusic.paused) {
+      backgroundMusic.volume = 0;
+      backgroundMusic.play();
+      fadeInBackgroundMusic();
+    }
 
     switchScreens(startScreen, gameScreen);
 
-    player = new Player("character", 45, 50, 24);
+    player = new Player("character", 54, 60, 24);
 
     lives = 5;
     currentLevel = 1;
@@ -88,25 +114,53 @@ document.addEventListener("DOMContentLoaded", function () {
     levelPassed = false;
 
     updateLevelIndicator();
-    livesText.textContent = lives;
+    ///livesText.textContent = lives;
     updateLivesWithHearts(lives);
 
     console.log("started game");
 
     startLevel(); // Start the first level
   }
+  function fadeInBackgroundMusic() {
+    let fadeDuration = 3000;
+    let fadeStep = 0.05;
+    let currentVolume = 0;
+    const maxBackgroundVolume = 0.4;
 
+    const fadeInterval = setInterval(() => {
+      if (isGameOver) {
+        clearInterval(fadeInterval);
+        backgroundMusic.pause();
+        backgroundMusic.currentTime = 0;
+        return;
+      }
+
+      currentVolume += fadeStep;
+      if (currentVolume >= maxBackgroundVolume) {
+        currentVolume = maxBackgroundVolume;
+        clearInterval(fadeInterval);
+      }
+      backgroundMusic.volume = currentVolume;
+    }, fadeDuration / (1 / fadeStep));
+  }
   // Restart the game
   function restartGame() {
+    isGameOver = false;
     switchScreens(gameOverScreen, gameScreen);
-    player = new Player("character", 45, 50, 24); 
+    player = new Player("character", 54, 60, 24);
+
+    if (backgroundMusic.paused) {
+      backgroundMusic.volume = 0;
+      backgroundMusic.play();
+      fadeInBackgroundMusic();
+    }
 
     lives = 5;
     currentLevel = 1;
     meteorsAvoided = 0;
     levelPassed = false;
     updateLevelIndicator();
-    livesText.textContent = lives;
+    //livesText.textContent = lives;
     updateLivesWithHearts(lives);
 
     startLevel();
@@ -123,7 +177,8 @@ document.addEventListener("DOMContentLoaded", function () {
     gameScreen.style.backgroundImage = `url('./assets/background${backgroundNumber}.png')`;
     gameScreen.style.backgroundSize = "cover";
 
-    const totalMeteors = 5 * currentLevel;
+    // Increase initial meteor count by 10%
+    const totalMeteors = Math.ceil(5.5 * currentLevel); // 5.5 instead of 5 for 10% increase
     const speed = 5 + currentLevel;
     meteorsAvoided = 0;
     levelPassed = false;
@@ -133,35 +188,36 @@ document.addEventListener("DOMContentLoaded", function () {
       clearInterval(meteorsInterval);
     }
 
-    const baseInterval = 800;
+    // Decrease base interval by 10% to spawn meteors more frequently
+    const baseInterval = 720; // Reduced from 800 for 10% faster spawning
     const intervalReductionPerLevel = 100;
-    const minInterval = 500;
+    const minInterval = 450; // Reduced from 500 for consistent scaling
 
-    meteorsInterval = setInterval(
-      () => {
-        const meteor = new Meteor(
-          meteorsContainer,
-          "assets/meteors/flaming_meteor.png"
-        );
-        activeMeteors.push(meteor);
-
-        meteor.fall(speed, () => checkCollision(meteor, player));
-        meteorsAvoided++;
-        if (meteorsAvoided >= totalMeteors) {
-          levelPassed = true;
-          showNextLevelIndicator();
-        }
-      },
-      1000 - currentLevel * intervalReductionPerLevel,
-      minInterval
+    const spawnInterval = Math.max(
+      minInterval,
+      baseInterval - (currentLevel - 1) * intervalReductionPerLevel
     );
-  }
 
+    meteorsInterval = setInterval(() => {
+      const meteor = new Meteor(
+        meteorsContainer,
+        "assets/meteors/flaming_meteor.png"
+      );
+      activeMeteors.push(meteor);
+      meteor.fall(speed, () => checkCollision(meteor, player));
+      meteorsAvoided++;
+
+      if (meteorsAvoided >= totalMeteors) {
+        levelPassed = true;
+        showNextLevelIndicator();
+      }
+    }, spawnInterval);
+  }
 
   function movePlayer(e) {
     if (!player) return;
 
-    const stepSize = 30;
+    const stepSize = 10;
 
     switch (e.code) {
       case "ArrowLeft":
@@ -188,19 +244,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-
   function advanceToNextLevel() {
     if (!levelPassed) return;
+
+    const levelUpSound = new Audio("assets/sounds/cartoon-boink.wav");
+    levelUpSound.volume = 0.8;
+    levelUpSound.play();
     currentLevel++;
     updateLevelIndicator();
-    arrowIndicator.style.display = "none";
+    arrowIndicator.style.display = "block";
     levelPassed = false;
 
     player.setPosition(0, player.y);
     setTimeout(() => startLevel(), 100);
   }
 
- 
   function showNextLevelIndicator() {
     arrowIndicator.style.display = "block";
   }
@@ -210,7 +268,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (player.checkCollision(meteor)) {
       const impactSound = new Audio("assets/sounds/pain.wav");
-      impactSound.volume = 0.5;
+      impactSound.volume = 0.4;
       impactSound.play();
 
       meteor.explodeMeteor(true);
@@ -224,36 +282,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     return false;
   }
-
-  // Explode meteor and play sound
-  // function explodeMeteor(meteor, hitByPlayer = false) {
-  //   meteor.element.classList.add("explode");
-  //   const numFrames = 6;
-  //   let currentFrame = 1;
-  //   const explosionSoundInstance = new Audio(
-  //     "assets/sounds/distorted-abyss-explosion.wav"
-  //   );
-  //   explosionSoundInstance.currentTime = 0;
-  //   explosionSoundInstance.play();
-
-  //   activeExplosionSounds.push(explosionSoundInstance);
-
-  //   const explosionInterval = setInterval(() => {
-  //     if (currentFrame > numFrames) {
-  //       clearInterval(explosionInterval);
-  //       if (hitByPlayer) {
-  //         meteor.remove();
-  //       } else {
-  //         setTimeout(() => meteor.remove(), 200);
-  //       }
-  //     } else {
-  //       meteor.element.style.backgroundImage = `url('./assets/explosion/PNG/Smoke/Smoke${currentFrame}.png')`;
-  //       currentFrame++;
-  //     }
-  //   }, 45);
-
-  //   activeExplosionIntervals.push(explosionInterval);
-  // }
 
   // Update lives with heart images
   function updateLivesWithHearts(numOfLives, hit) {
@@ -291,15 +319,42 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // End the game when lives reach 0
   function endGame() {
-    const backgroundMusic = document.getElementById("background-music");
-    backgroundMusic.pause();
+    isGameOver = true;
 
-    const gameOverSound = new Audio("assets/sounds/game-over.wav");
-    gameOverSound.play();
-    gameOverSound.loop = false;
-    gameOverSound.volume = 0.7;
-    switchScreens(gameScreen, gameOverScreen);
     clearInterval(meteorsInterval);
+
+    activeMeteors.forEach((meteor) => {
+      // Stop explosion sounds
+      if (meteor.activeExplosionSounds) {
+        meteor.activeExplosionSounds.forEach((sound) => {
+          sound.pause();
+          sound.currentTime = 0;
+        });
+      }
+      // Clear explosion intervals
+      if (meteor.explosionInterval) {
+        clearInterval(meteor.explosionInterval);
+      }
+      meteor.remove();
+    });
+    activeMeteors = [];
+
+    // Stop background music
+    if (backgroundMusic) {
+      backgroundMusic.pause();
+      backgroundMusic.currentTime = 0;
+    }
+
+    // Clear any remaining intervals
+    activeExplosionIntervals.forEach((interval) => clearInterval(interval));
+    activeExplosionIntervals = [];
+
+    // Clear any remaining sounds
+    activeExplosionSounds.forEach((sound) => {
+      sound.pause();
+      sound.currentTime = 0;
+    });
+    activeExplosionSounds = [];
 
     activeExplosionSounds.forEach((sound) => {
       sound.pause();
@@ -307,14 +362,24 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     activeExplosionSounds = [];
 
-    activeExplosionIntervals.forEach((interval) => clearInterval(interval));
-    activeExplosionIntervals = [];
+    // Add a small delay before playing game over sound
+    setTimeout(() => {
+      const gameOverSound = new Audio("assets/sounds/game-over.wav");
+      gameOverSound.volume = 0.7;
+      gameOverSound.play();
 
-    activeMeteors.forEach((meteor) => {
-      meteor.remove();
-    });
-    activeMeteors = [];
+      gameOverSound.addEventListener(
+        "ended",
+        () => {
+          gameOverSound.pause();
+          gameOverSound.currentTime = 0;
+        },
+        { once: true }
+      );
+    }, 100);
 
+    // Switch screens and update background
+    switchScreens(gameScreen, gameOverScreen);
     gameOverScreen.style.backgroundImage = `url('./assets/background3.png')`;
     gameOverScreen.style.backgroundSize = "cover";
   }
@@ -322,7 +387,11 @@ document.addEventListener("DOMContentLoaded", function () {
   // Switch between screens
   function switchScreens(hideScreen, showScreen) {
     console.log("Switching screens:", hideScreen, showScreen);
-    hideScreen.classList.add("hidden");
+    startScreen.classList.add("hidden");
+    gameScreen.classList.add("hidden");
+    gameOverScreen.classList.add("hidden");
+
+    // Then show only the target screen
     showScreen.classList.remove("hidden");
   }
 
@@ -338,53 +407,83 @@ document.addEventListener("DOMContentLoaded", function () {
     scores.push({ name: playerName, level: level });
     scores.sort((a, b) => b.level - a.level || a.name.localeCompare(b.name));
 
-    if (scores.length > 5) {
-      scores.length = 5;
+    if (scores.length > 3) {
+      scores.length = 3;
     }
 
     localStorage.setItem("topScores", JSON.stringify(scores));
   }
 
   // Function to display the top scores
-  function displayTopScores() {
-    const scores = getTopScores();
-    scoreTable.innerHTML = "";
-    scores.forEach((score, index) => {
-      const row = scoreTable.insertRow();
-      const rankCell = row.insertCell(0);
-      const nameCell = row.insertCell(1);
-      const levelCell = row.insertCell(2);
+ function displayTopScores() {
+   const scores = getTopScores();
+   const scoreTable = document.querySelector("#score-table tbody");
+   const persistentTable = document.querySelector(
+     "#persistent-score-table tbody"
+   );
 
-      rankCell.textContent = index + 1; // Rank
-      nameCell.textContent = score.name;
-      levelCell.textContent = score.level;
-    });
-  }
+   // Function to populate a table
+   const populateTable = (table) => {
+     if (!table) return;
+     table.innerHTML = "";
 
-  // Submit score when button clicked
+     scores.forEach((score, index) => {
+       const row = table.insertRow();
+       const rankCell = row.insertCell(0);
+       const nameCell = row.insertCell(1);
+       const levelCell = row.insertCell(2);
+
+       rankCell.textContent = index + 1;
+       nameCell.textContent = score.name;
+       levelCell.textContent = score.level;
+     });
+   };
+
+   // Update both tables
+   populateTable(scoreTable);
+   populateTable(persistentTable);
+ }
+
+  
   submitButton.addEventListener("click", () => {
     const playerName = playerNameInput.value.trim();
-    const playerLevel = currentLevel;
 
-    if (playerName && playerLevel) {
-      saveScore(playerName, playerLevel);
+    if (playerName && currentLevel) {
+    
+      saveScore(playerName, currentLevel);
       displayTopScores();
+  
+      playerNameInput.value = "";
     } else {
-      alert("Please enter a valid name and level.");
+      alert("Please enter a valid name.");
     }
   });
 
- 
+  //  Enter key press
+  playerNameInput.addEventListener("keyup", (event) => {
+    if (event.key === "Enter") {
+      const playerName = playerNameInput.value.trim();
 
+      if (playerName && currentLevel) {
+       
+        saveScore(playerName, currentLevel);
+        displayTopScores(); 
 
- function resetScoreTable() {
-   console.log("Reset button clicked");
-   localStorage.removeItem("topScores");
-   console.log("Local storage cleared:", localStorage.getItem("topScores")); // Should be null
-   scoreTable.innerHTML = "";
-   displayTopScores();
-   console.log("Score table reset and updated");
- }
+        playerNameInput.value = "";
+      } else {
+        alert("Please enter a valid name.");
+      }
+    }
+  });
+
+  function resetScoreTable() {
+    console.log("Reset button clicked");
+    localStorage.removeItem("topScores");
+    console.log("Local storage cleared:", localStorage.getItem("topScores")); // Should be null
+    scoreTable.innerHTML = "";
+    displayTopScores();
+    console.log("Score table reset and updated");
+  }
 
   // Show game over screen
   function showGameOverScreen() {
@@ -393,4 +492,85 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // resetScoreTable();
+});
+
+
+// Add these functions to your existing script.js
+
+function updateAllScoreTables() {
+    const scores = getTopScores();
+    const gameOverTable = document.querySelector('#score-table tbody');
+    const persistentTable = document.querySelector('#persistent-score-table tbody');
+    const persistentContainer = document.querySelector('.persistent-score-container');
+    
+    // Helper function to populate a table
+    const populateTable = (table) => {
+        if (!table) return;
+        table.innerHTML = '';
+        
+        if (scores.length === 0) {
+            const row = table.insertRow();
+            const cell = row.insertCell(0);
+            cell.colSpan = 3;
+            cell.textContent = 'No scores yet';
+            cell.style.textAlign = 'center';
+            return;
+        }
+
+        scores.forEach((score, index) => {
+            const row = table.insertRow();
+            const rankCell = row.insertCell(0);
+            const nameCell = row.insertCell(1);
+            const levelCell = row.insertCell(2);
+
+            rankCell.textContent = index + 1;
+            nameCell.textContent = score.name;
+            levelCell.textContent = score.level;
+        });
+    };
+
+    // Update both tables
+    populateTable(gameOverTable);
+    populateTable(persistentTable);
+    
+    // Show/hide persistent score container based on scores
+    persistentContainer.style.display = scores.length > 0 ? 'block' : 'none';
+}
+
+// Modify the existing saveScore function
+function saveScore(playerName, level) {
+    const scores = getTopScores();
+    scores.push({ name: playerName, level: level });
+    scores.sort((a, b) => b.level - a.level || a.name.localeCompare(b.name));
+
+    if (scores.length > 3) {
+        scores.length = 3;
+    }
+
+    localStorage.setItem("topScores", JSON.stringify(scores));
+    updateAllScoreTables();
+}
+
+// Modify the existing resetScoreTable function
+function resetScoreTable() {
+    localStorage.removeItem("topScores");
+    updateAllScoreTables();
+}
+
+// Add to your existing DOMContentLoaded event listener
+document.addEventListener('DOMContentLoaded', function() {
+    // ... your existing code ...
+    
+    // Initial load of scores
+    updateAllScoreTables();
+    
+    // Update your existing submit button event listener
+    submitButton.addEventListener("click", () => {
+        const playerName = playerNameInput.value.trim();
+        if (playerName && currentLevel) {
+            saveScore(playerName, currentLevel);
+        } else {
+            alert("Please enter a valid name.");
+        }
+    });
 });
