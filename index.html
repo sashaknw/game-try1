@@ -31,31 +31,37 @@
     </div>
 
     <div id="game-over-screen" class="hidden">
-        <div id="game-over-message-container">
+        <div class="game-over-top">
             <img id="game-over-message" src="assets/game-over-transp.png" alt="Game Over">
-            <button id="restart-button" class="retro-button retro-button--primary retro-button--large">Start Again</button>
+            <div class="buttons-row">
+                <button id="restart-button" class="retro-button retro-button--primary retro-button--large">Start Again</button>
+            </div>
         </div>
         
-        <h2 class="top-scores">Top Scores</h2>
-        <div id="top-and-reset-div">
-            <button id="reset-scores" class="retro-button retro-button--link retro-button--large">Reset</button>
+        <div class="score-section">
+            <div class="score-header">
+                <h2 class="top-scores">Top Scores</h2>
+                <button id="reset-scores" class="retro-button retro-button--link retro-button--large">Reset</button>
+            </div>
+            
+            <div id="score-table-container">
+                <table id="score-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Name</th>
+                            <th>Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="submit-score">
+                <input type="text" id="player-name" placeholder="Enter your name">
+                <button id="submit-score" class="retro-button retro-button--secondary retro-button--medium">Submit Score</button>
+            </div>
         </div>
-        
-        <div id="score-table-container">
-            <table id="score-table">
-                <thead>
-                    <tr>
-                        <th>Rank</th>
-                        <th>Name</th>
-                        <th>Level</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-        <input type="text" id="player-name" placeholder="Enter your name">
-        <button id="submit-score" class="retro-button retro-button--secondary retro-button--medium">Submit Score</button>
     </div>
 
     <script src="js/Element.js"></script>

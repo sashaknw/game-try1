@@ -19,12 +19,6 @@ document.addEventListener("DOMContentLoaded", function () {
     .getElementById("score-table")
     .getElementsByTagName("tbody")[0];
   const resetButton = document.getElementById("reset-scores");
-  const persistentTable = document.querySelector(
-    "#persistent-score-table tbody"
-  );
-  const persistentContainer = document.querySelector(
-    ".persistent-score-container"
-  );
 
   // Game state variables
   let player;
@@ -45,40 +39,29 @@ document.addEventListener("DOMContentLoaded", function () {
     return scores;
   }
 
-  function updateAllScoreTables() {
+  function updateScoreTable() {
     const scores = getTopScores();
+    scoreTable.innerHTML = "";
 
-    const populateTable = (table) => {
-      if (!table) return;
-      table.innerHTML = "";
-
-      if (scores.length === 0) {
-        const row = table.insertRow();
-        const cell = row.insertCell(0);
-        cell.colSpan = 3;
-        cell.textContent = "No scores yet";
-        cell.style.textAlign = "center";
-        return;
-      }
-
-      scores.forEach((score, index) => {
-        const row = table.insertRow();
-        const rankCell = row.insertCell(0);
-        const nameCell = row.insertCell(1);
-        const levelCell = row.insertCell(2);
-
-        rankCell.textContent = index + 1;
-        nameCell.textContent = score.name;
-        levelCell.textContent = score.level;
-      });
-    };
-
-    populateTable(scoreTable);
-    populateTable(persistentTable);
-
-    if (persistentContainer) {
-      persistentContainer.style.display = scores.length > 0 ? "block" : "none";
+    if (scores.length === 0) {
+      const row = scoreTable.insertRow();
+      const cell = row.insertCell(0);
+      cell.colSpan = 3;
+      cell.textContent = "No scores yet";
+      cell.style.textAlign = "center";
+      return;
     }
+
+    scores.forEach((score, index) => {
+      const row = scoreTable.insertRow();
+      const rankCell = row.insertCell(0);
+      const nameCell = row.insertCell(1);
+      const levelCell = row.insertCell(2);
+
+      rankCell.textContent = index + 1;
+      nameCell.textContent = score.name;
+      levelCell.textContent = score.level;
+    });
   }
 
   function saveScore(playerName, level) {
@@ -91,12 +74,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     localStorage.setItem("topScores", JSON.stringify(scores));
-    updateAllScoreTables();
+    updateScoreTable();
   }
 
   function resetScoreTable() {
     localStorage.removeItem("topScores");
-    updateAllScoreTables();
+    updateScoreTable();
   }
 
   // Game functions
@@ -144,33 +127,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }, fadeDuration / (1 / fadeStep));
   }
 
-  function restartGame() {
-    isGameOver = false;
-    switchScreens(gameOverScreen, gameScreen);
-    player = new Player("character", 54, 60, 24);
-
-    if (backgroundMusic.paused) {
-      backgroundMusic.volume = 0;
-      backgroundMusic.play();
-      fadeInBackgroundMusic();
-    }
-
-    lives = 5;
-    currentLevel = 1;
-    meteorsAvoided = 0;
-    levelPassed = false;
-    updateLevelIndicator();
-    updateLivesWithHearts(lives);
-    startLevel();
-  }
-
-  function updateLevelIndicator() {
-    levelText.textContent = currentLevel;
-  }
-
   function startLevel() {
     const backgroundNumber = ((currentLevel - 1) % 4) + 1;
-    gameScreen.style.backgroundImage = `url('./assets/background${backgroundNumber}.png')`;
+    gameScreen.style.backgroundImage = `url('assets/background${backgroundNumber}.png')`;
     gameScreen.style.backgroundSize = "cover";
 
     const totalMeteors = Math.ceil(5.5 * currentLevel);
@@ -208,8 +167,32 @@ document.addEventListener("DOMContentLoaded", function () {
     }, spawnInterval);
   }
 
+  function restartGame() {
+    isGameOver = false;
+    switchScreens(gameOverScreen, gameScreen);
+    player = new Player("character", 54, 60, 24);
+
+    if (backgroundMusic.paused) {
+      backgroundMusic.volume = 0;
+      backgroundMusic.play();
+      fadeInBackgroundMusic();
+    }
+
+    lives = 5;
+    currentLevel = 1;
+    meteorsAvoided = 0;
+    levelPassed = false;
+    updateLevelIndicator();
+    updateLivesWithHearts(lives);
+    startLevel();
+  }
+
+  function updateLevelIndicator() {
+    levelText.textContent = currentLevel;
+  }
+
   function movePlayer(e) {
-    if (!player) return;
+    if (!player || isGameOver) return;
 
     const stepSize = 10;
 
@@ -233,6 +216,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function checkPlayerPosition() {
+    if (isGameOver) return;
     if (player.x + player.width >= gameScreen.clientWidth && levelPassed) {
       advanceToNextLevel();
     }
@@ -283,7 +267,7 @@ document.addEventListener("DOMContentLoaded", function () {
     for (let i = 0; i < numOfLives; i++) {
       const heartImg = document.createElement("img");
       heartImg.className = "heart-image";
-      heartImg.src = "./assets/heart-pixel-art-32x32.png";
+      heartImg.src = "assets/heart-pixel-art-32x32.png";
       heartImg.alt = "Heart";
 
       if (hit && i === numOfLives - 1) {
@@ -353,7 +337,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 100);
 
     switchScreens(gameScreen, gameOverScreen);
-    gameOverScreen.style.backgroundImage = `url('./assets/background3.png')`;
+    gameOverScreen.style.backgroundImage = `url('assets/background3.png')`;
     gameOverScreen.style.backgroundSize = "cover";
   }
 
@@ -370,6 +354,7 @@ document.addEventListener("DOMContentLoaded", function () {
   resetButton.addEventListener("click", resetScoreTable);
 
   document.addEventListener("keydown", (e) => {
+    if (isGameOver) return;
     keyState[e.code] = true;
     movePlayer(e);
   });
@@ -401,5 +386,5 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Initialize scores
-  updateAllScoreTables();
+  updateScoreTable();
 });
