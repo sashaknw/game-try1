@@ -291,7 +291,7 @@ document.addEventListener("DOMContentLoaded", function () {
     for (let i = 0; i < numOfLives; i++) {
       const heartImg = document.createElement("img");
       heartImg.className = "heart-image";
-      heartImg.src = "/assets/heart-pixel-art-32x32.png";
+      heartImg.src = "./assets/heart-pixel-art-32x32.png";
       heartImg.alt = "Heart";
 
       if (hit && i === numOfLives - 1) {
@@ -496,7 +496,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 // Add these functions to your existing script.js
-
+function getTopScores() {
+  const scores = JSON.parse(localStorage.getItem("topScores")) || [];
+  return scores;
+}
 function updateAllScoreTables() {
     const scores = getTopScores();
     const gameOverTable = document.querySelector('#score-table tbody');

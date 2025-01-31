@@ -12,7 +12,7 @@ body {
 
 @font-face {
     font-family: 'Monogram';
-    src: url('/assets/font/monogram/ttf/monogram.ttf') format('truetype');
+    src: url('./assets/font/monogram/ttf/monogram.ttf') format('truetype');
 }
 
 /* Screen Layout */
@@ -147,7 +147,7 @@ body {
     right: 0;
     width: 100%;
     height: 95px;
-    background: url('/assets/floor.png') repeat-x;
+    background: url('./assets/floor.png') repeat-x;
     background-size: 140px 65px;
     z-index: 1;
 }
